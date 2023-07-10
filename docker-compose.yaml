@@ -5,13 +5,14 @@ services:
     build:
       context: Node
     container_name: node-app
-    entrypoint: node index.js
+    entrypoint: dockerize -wait tcp://mysql-db:3306 -timeout 40s node index.js
     networks:
       - nodeapp
     tty: true
+    volumes:
+      - ./Node:/usr/src/app
     depends_on:
       - mysql-db
-      - nginx-app
   mysql-db:
     build:
       context: Mysql
@@ -35,8 +36,8 @@ services:
           - "8080:80"
       networks:
         - nodeapp
-
+      depends_on:
+        - node-app
 networks:
   nodeapp:
     driver: bridge
-  
